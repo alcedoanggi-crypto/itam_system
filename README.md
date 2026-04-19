@@ -1,8 +1,8 @@
-# 🖥️ EquipoPRO: IT Asset Management System (ITAM)
+# 🖥️ EquipoPRO: Sistema de equipo tecnologico IT Asset Management System (ITAM)
 
 **EquipoPRO** es una solución integral de nivel empresarial diseñada para el control, seguimiento y mantenimiento de activos tecnológicos. Esta plataforma permite centralizar la gestión de hardware y software, optimizando el ciclo de vida de los equipos y garantizando la continuidad operativa.
 
-![Dashboard de EquipoPRO]
+Ver imágen del sistema:
 <img width="1365" height="656" alt="image" src="https://github.com/user-attachments/assets/eb0cdc7f-982a-44be-8140-a6d9d188f2c3" />
 
 ## 🚀 Funcionalidades Estrella
