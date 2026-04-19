@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - Iniciar Sesión</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body class="login-page">
+    <div class="content-body"> <div class="card login-card p-4 shadow-lg" style="width: 380px;">
+            <div class="text-center mb-4">
+                <span class="material-icons-round login-icon" style="font-size: 48px;">inventory_2</span>
+                <h3 class="fw-bold mt-2">Bienvenido</h3>
+                <p class="text-muted">Sistema Gestion Equipo Tecnologico</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} py-2 small">{{ message }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Usuario</label>
+                    <input type="text" name="username" class="form-control" placeholder="Ej: admin" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label small fw-bold">Contraseña</label>
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Ingresar al Sistema</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

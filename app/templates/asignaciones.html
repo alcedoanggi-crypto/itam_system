@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <!-- Encabezado de la página -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Movimientos y Asignaciones</h2>
+            <p class="text-muted small">Control de entrega y devolución de equipos en StockPro</p>
+        </div>
+        <!-- Botón que activa el Modal -->
+        <button type="button" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalAsignacion">
+            <span class="material-icons-round">person_add</span> Nueva Asignación
+        </button>
+    </div>
+
+    <!-- Tabla de Asignaciones -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Equipo (S/N)</th>
+                            <th>Usuario Responsable</th>
+                            <th>Fecha Entrega</th>
+                            <th>Estado Actual</th>
+                            <th class="text-end pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for asig in asignaciones %}
+                        <tr>
+                            <td class="ps-4">
+                                <span class="fw-bold text-dark">{{ asig.equipo.numero_serie }}</span>
+                                <div class="text-muted small text-uppercase">{{ asig.equipo.tipo }}</div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; font-size: 0.8rem;">
+                                        {{ asig.usuario.nombre[0] }}
+                                    </div>
+                                    <span>{{ asig.usuario.nombre }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-muted">{{ asig.fecha_entrega.strftime('%d/%m/%Y %H:%M') }}</span>
+                            </td>
+                            <td>
+                                {% if not asig.fecha_devolucion %}
+                                    <span class="badge rounded-pill bg-warning text-dark px-3">En Posesión</span>
+                                {% else %}
+                                    <span class="badge rounded-pill bg-success px-3">Devuelto</span>
+                                    <div class="text-muted x-small" style="font-size: 0.7rem;">
+                                        {{ asig.fecha_devolucion.strftime('%d/%m/%Y') }}
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                {% if not asig.fecha_devolucion %}
+                                <form action="{{ url_for('asignaciones.listar_asignaciones') }}" method="POST" style="display:inline;">
+                                    <!-- Aquí podrías pasar un ID oculto para marcar como devuelto -->
+                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                        Registrar Devolución
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="text-muted small">Completado</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <span class="material-icons-round fs-1 d-block mb-2">inventory_2</span>
+                                No hay asignaciones registradas todavía.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Nueva Asignación -->
+<div class="modal fade" id="modalAsignacion" tabindex="-1" aria-labelledby="modalAsignacionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="modalAsignacionLabel">Asignar Equipo</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="POST" action="{{ url_for('asignaciones.listar_asignaciones') }}">
+                <div class="modal-body p-4">
+                    <!-- Selección de Equipo -->
+                    <div class="mb-4">
+                        <label for="equipo_id" class="form-label fw-bold text-secondary">Seleccionar Equipo Disponible</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><span class="material-icons-round fs-5">computer</span></span>
+                            <select name="equipo_id" id="equipo_id" class="form-select" required>
+                                <option value="" disabled selected>Elegir un equipo...</option>
+                                {% for eq in equipos %}
+                                <option value="{{ eq.id }}">{{ eq.numero_serie }} - {{ eq.tipo }} ({{ eq.marca }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-text">Solo aparecen equipos con estado "Disponible".</div>
+                    </div>
+
+                    <!-- Selección de Usuario -->
+                    <div class="mb-3">
+                        <label for="usuario_id" class="form-label fw-bold text-secondary">Asignar a Usuario</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><span class="material-icons-round fs-5">person</span></span>
+                            <select name="usuario_id" id="usuario_id" class="form-select" required>
+                                <option value="" disabled selected>Elegir usuario responsable...</option>
+                                {% for user in usuarios %}
+                                <option value="{{ user.id }}">{{ user.nombre }} (@{{ user.username }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary px-4">
+                        Confirmar Entrega
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

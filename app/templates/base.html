@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TalentPro - Gestión de RRHH</title>
+    <!-- Fuentes e Iconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+    <style>
+        /* Estilo para ocultar el scroll en la nav lateral */
+        .sidebar nav {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE/Edge */
+        }
+        .sidebar nav::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Brave */
+        }
+
+        /* Estilo para las etiquetas del menú (letras blancas) */
+        .nav-label {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            margin-top: 20px;
+            padding-left: 20px;
+            display: block;
+        }
+
+        /* Título del sistema en la barra superior */
+        .system-title-text {
+            border-left: 3px solid #0d6efd;
+            padding-left: 15px;
+            color: #495057;
+        }
+    </style>
+</head>
+<body class="has-sidebar">
+    <aside class="sidebar">
+        <!-- Header del Sidebar con nuevo logo de RRHH -->
+        <div class="sidebar-header p-4 d-flex align-items-center">
+            <div class="logo-wrapper me-2 text-primary">
+                <span class="material-icons-round fs-2">groups</span>
+            </div>
+            <span class="brand-name fw-bold fs-4 text-white">Equipo<span class="text-primary">PRO</span></span>
+        </div>
+
+        <nav class="flex-grow-1 overflow-auto">
+            <div class="nav-section">
+                <span class="nav-label">PRINCIPAL</span>
+                <a href="{{ url_for('dashboard.dashboard') }}" class="nav-item {% if request.endpoint == 'dashboard.dashboard' %}active{% endif %}">
+                    <span class="material-icons-round">dashboard</span> Dashboard
+                </a>
+                <a href="{{ url_for('equipos.listar_equipos') }}" class="nav-item {% if request.endpoint == 'equipos.listar_equipos' %}active{% endif %}">
+                    <span class="material-icons-round">devices</span> Equipos
+                </a>
+                <a href="{{ url_for('marcas.listar_marcas') }}" class="nav-item">
+                    <span class="material-icons-round">label</span> Marcas y Modelos
+                </a>
+                <a href="{{ url_for('software.listar_software') }}" class="nav-item">
+                    <span class="material-icons-round">terminal</span> Software
+                </a>
+                <a href="{{ url_for('categorias.listar_categorias') }}" class="nav-item">
+                    <span class="material-icons-round">business</span> Categorías
+                </a>
+                <a href="{{ url_for('ubicaciones.listar_ubicaciones') }}" class="nav-item">
+                    <span class="material-icons-round">place</span> Ubicaciones
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-label">REPARACIONES</span>
+                <a href="{{ url_for('mantenimientos.listar_mantenimientos') }}" class="nav-item">
+                    <span class="material-icons-round">build</span> Mantenimientos
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-label">MOVIMIENTOS</span>
+                <a href="{{ url_for('asignaciones.listar_asignaciones') }}" class="nav-item {% if request.endpoint == 'asignaciones.listar_asignaciones' %}active{% endif %}">
+                    <span class="material-icons-round">swap_vert</span> Asignaciones
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-label">CONFIGURACIÓN</span>
+                <a href="{{ url_for('usuarios.listar_usuarios') }}" class="nav-item">
+                    <span class="material-icons-round">group</span> Usuarios y Roles
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer p-3 border-top border-secondary">
+            <a href="{{ url_for('auth_bp.logout') }}" class="nav-item text-danger">
+                <span class="material-icons-round">logout</span> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <!-- Barra Superior Corregida -->
+        <header class="top-bar shadow-sm d-flex align-items-center px-4">
+            <div class="system-title">
+                <h5 class="mb-0 fw-bold system-title-text text-uppercase small">
+                    Sistema de Gestión de Equipos tecnologicos
+                </h5>
+            </div>
+
+            <div class="ms-auto d-flex align-items-center">
+                <div class="text-end me-3">
+                    <p class="mb-0 fw-bold small text-dark">{{ current_user.username if current_user.is_authenticated else 'Invitado' }}</p>
+                    <p class="mb-0 text-muted" style="font-size: 0.7rem;">ADMINISTRADOR</p>
+                </div>
+                <div class="bg-primary-subtle rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px;">
+                    <span class="material-icons-round text-primary">person</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="content-body p-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

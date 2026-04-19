@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-dark mb-1">Panel de Control</h2>
+            <p class="text-muted small">Análisis de inventario y estado operativo del sistema</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card kpi-card border-0 shadow-sm" style="border-left: 5px solid #4e73df !important;">
+                <div class="card-body d-flex justify-content-between align-items-center p-4">
+                    <div>
+                        <h6 class="text-muted small fw-bold text-uppercase mb-2">Total Equipos</h6>
+                        <h2 class="fw-bold mb-0">{{ total_equipos }}</h2>
+                    </div>
+                    <div class="bg-primary-subtle text-primary p-3 rounded-3">
+                        <span class="material-icons-round">inventory_2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card kpi-card border-0 shadow-sm" style="border-left: 5px solid #e74a3b !important;">
+                <div class="card-body d-flex justify-content-between align-items-center p-4">
+                    <div>
+                        <h6 class="text-muted small fw-bold text-uppercase mb-2">En Reparación</h6>
+                        <h2 class="fw-bold mb-0 text-danger">{{ equipos_reparacion }}</h2>
+                    </div>
+                    <div class="bg-danger-subtle text-danger p-3 rounded-3">
+                        <span class="material-icons-round">build</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card kpi-card border-0 shadow-sm" style="border-left: 5px solid #1cc88a !important;">
+                <div class="card-body d-flex justify-content-between align-items-center p-4">
+                    <div>
+                        <h6 class="text-muted small fw-bold text-uppercase mb-2">Disponibles</h6>
+                        <h2 class="fw-bold mb-0 text-success">{{ equipos_disponibles }}</h2>
+                    </div>
+                    <div class="bg-success-subtle text-success p-3 rounded-3">
+                        <span class="material-icons-round">check_circle</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h6 class="fw-bold m-0 text-dark">Actividad Mensual</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-wrapper">
+                        <canvas id="movimientosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h6 class="fw-bold m-0 text-dark">Equipos por Categoría</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-wrapper">
+                        <canvas id="categoriaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center px-4">
+            <h6 class="fw-bold m-0 text-dark">Próximos Mantenimientos (Este Mes)</h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">EQUIPO</th>
+                        <th>FECHA PROGRAMADA</th>
+                        <th class="text-center">ESTADO</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alerta in alertas_mantenimiento %}
+                    <tr>
+                        <td class="ps-4 fw-bold">{{ alerta.equipo.numero_serie }}</td>
+                        <td class="text-muted">{{ alerta.fecha_proximo_servicio.strftime('%d/%m/%Y') }}</td>
+                        <td class="text-center">
+                            <span class="badge bg-warning-subtle text-warning px-3 rounded-pill">Pendiente</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center py-4 text-muted small">No hay servicios programados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Configuración global para estabilidad en scroll
+    Chart.defaults.maintainAspectRatio = false;
+    Chart.defaults.responsive = true;
+
+    // Gráfico de Categorías
+    const ctxCat = document.getElementById('categoriaChart').getContext('2d');
+    new Chart(ctxCat, {
+        type: 'doughnut',
+        data: {
+            labels: {{ labels_cat|tojson if labels_cat else [] }},
+            datasets: [{
+                data: {{ values_cat|tojson if values_cat else [] }},
+                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true } } },
+            cutout: '70%'
+        }
+    });
+
+    // Gráfico de Actividad
+    const ctxMov = document.getElementById('movimientosChart').getContext('2d');
+    new Chart(ctxMov, {
+        type: 'line',
+        data: {
+            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Equipos Registrados',
+                data: [0, 0, {{ total_equipos }}, 0, 0, 0],
+                borderColor: '#4e73df',
+                backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                fill: true,
+                tension: 0.4
+            }]
+        }
+    });
+</script>
+{% endblock %}

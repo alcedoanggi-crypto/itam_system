@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <!-- Encabezado de la Sección -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0 text-dark">Equipos Tecnológicos</h2>
+            <p class="text-muted small">Gestión y control del inventario de hardware</p>
+        </div>
+        <!-- Botón para abrir el Modal -->
+        <button type="button" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNuevoEquipo">
+            <span class="material-icons-round">add</span> Nuevo Equipo
+        </button>
+    </div>
+
+    <!-- Tabla de Equipos -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 text-uppercase small fw-bold text-secondary">S/N (Serie)</th>
+                            <th class="text-uppercase small fw-bold text-secondary">Tipo</th>
+                            <th class="text-uppercase small fw-bold text-secondary">Marca/Modelo</th>
+                            <th class="text-uppercase small fw-bold text-secondary">Categoría</th>
+                            <th class="text-uppercase small fw-bold text-secondary">Ubicación</th>
+                            <th class="text-uppercase small fw-bold text-secondary">Estado</th>
+                            <th class="text-end pe-4 text-uppercase small fw-bold text-secondary">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for eq in equipos %}
+                        <tr>
+                            <td class="ps-4 fw-bold text-primary">{{ eq.numero_serie }}</td>
+                            <td>{{ eq.tipo }}</td>
+                            <td>
+                                {% if eq.marca_modelo %}
+                                    <span class="fw-semibold">{{ eq.marca_modelo.nombre_marca }}</span>
+                                    <span class="text-muted small">{{ eq.marca_modelo.modelo }}</span>
+                                {% else %}
+                                    <span class="text-muted italic small">Sin marca</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border shadow-xs">
+                                    {{ eq.categoria.nombre if eq.categoria else 'N/A' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="material-icons-round fs-6 text-muted me-1">place</span>
+                                    <span class="small">{{ eq.ubicacion.nombre_sala if eq.ubicacion else 'No asignada' }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if eq.estado == 'Disponible' %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3">Disponible</span>
+                                {% elif eq.estado == 'En Reparación' %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3">En Reparación</span>
+                                {% else %}
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3">{{ eq.estado }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                <button class="btn btn-sm btn-outline-primary border-0" title="Editar">
+                                    <span class="material-icons-round fs-6">edit</span>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger border-0" title="Eliminar">
+                                    <span class="material-icons-round fs-6">delete</span>
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <span class="material-icons-round fs-1 d-block mb-2 text-light">inventory_2</span>
+                                No hay equipos registrados todavía.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Registrar Nuevo Equipo -->
+<div class="modal fade" id="modalNuevoEquipo" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado -->
+            <div class="modal-header bg-primary text-white border-0 py-3">
+                <div class="d-flex align-items-center">
+                    <span class="material-icons-round me-2">devices</span>
+                    <h5 class="modal-title fw-bold mb-0">Registrar Nuevo Equipo</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form action="{{ url_for('equipos.listar_equipos') }}" method="POST">
+                <div class="modal-body p-4">
+                    <div class="row g-4">
+                        <!-- Columna Izquierda: Información Técnica -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-primary mb-3 d-flex align-items-center">
+                                <span class="material-icons-round fs-5 me-1">settings</span> Datos Técnicos
+                            </h6>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Número de Serie</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 text-muted">
+                                        <i class="material-icons-round fs-6">qr_code</i>
+                                    </span>
+                                    <input type="text" name="numero_serie" class="form-control border-start-0" placeholder="Ej: SN-2026" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Tipo de Equipo</label>
+                                <select name="tipo" class="form-select shadow-sm" required>
+                                    <option value="" disabled selected>Seleccione Tipo...</option>
+                                    <option value="Laptop">Laptop</option>
+                                    <option value="Monitor">Monitor</option>
+                                    <option value="Impresora">Impresora</option>
+                                    <option value="Servidor">Servidor</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Marca y Modelo</label>
+                                <select name="marca_modelo_id" class="form-select shadow-sm" required>
+                                    <option value="" disabled selected>Seleccione Marca/Modelo...</option>
+                                    {% for m in marcas %}
+                                    <option value="{{ m.id }}">{{ m.nombre_marca }} - {{ m.modelo }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha: Gestión e Inventario -->
+                        <div class="col-md-6 border-start ps-md-4">
+                            <h6 class="fw-bold text-primary mb-3 d-flex align-items-center">
+                                <span class="material-icons-round fs-5 me-1">assignment</span> Gestión
+                            </h6>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Fecha de Compra</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0 text-muted">
+                                        <i class="material-icons-round fs-6">calendar_today</i>
+                                    </span>
+                                    <input type="date" name="fecha_compra" class="form-control border-start-0" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Categoría</label>
+                                <select name="categoria_id" class="form-select shadow-sm" required>
+                                    <option value="" disabled selected>Seleccione Categoría...</option>
+                                    {% for cat in categorias %}
+                                    <option value="{{ cat.id }}">{{ cat.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Ubicación</label>
+                                <select name="ubicacion_id" class="form-select shadow-sm" required>
+                                    <option value="" disabled selected>Seleccione Ubicación...</option>
+                                    {% for ubi in ubicaciones %}
+                                    <option value="{{ ubi.id }}">{{ ubi.nombre_sala }} ({{ ubi.sede }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Estado Inicial</label>
+                                <select name="estado" class="form-select shadow-sm">
+                                    <option value="Disponible">Disponible</option>
+                                    <option value="En Reparación">En Reparación</option>
+                                    <option value="Asignado">Asignado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer bg-light border-0 py-3">
+                    <button type="button" class="btn btn-link text-secondary text-decoration-none fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm rounded-pill">
+                        Guardar Registro
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

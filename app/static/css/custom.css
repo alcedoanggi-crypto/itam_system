@@ -1,0 +1,349 @@
+/* --- VARIABLES DE COLOR --- */
+:root {
+    --primary-gradient: linear-gradient(135deg, #23a6d5 0%, #23d5ab 100%);
+    --sidebar-dark: #2c3e50;      /* Azul oscuro profesional para el menú */
+    --bg-main: #ebf2f6;           /* Azul muy pálido para el fondo (no es blanco) */
+    --white: #ffffff;
+    --text-main: #34495e;
+    --text-muted: #7f8c8d;
+    --accent: #23a6d5;
+}
+
+/* Aseguramos que el fondo sea uniforme en toda la página */
+body {
+    background-color: var(--bg-main); /* El color claro que definiste */
+    min-height: 100vh;
+    display: flex;
+}
+
+/* Estilos para Tarjetas de KPI en Dashboard */
+.kpi-card {
+    transition: transform 0.2s ease-in-out;
+    border-radius: 12px;
+}
+.kpi-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Contenedor estable para Gráficos */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Botones de Operación (Entrada/Salida) en Movimientos */
+.op-card {
+    cursor: pointer;
+    border: 2px solid #f0f0f0;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.op-card:hover {
+    border-color: #dee2e6;
+}
+
+/* Estado activo para Entrada */
+.op-active-entrada {
+    border-color: #198754 !important;
+    background-color: #f4fff9 !important;
+}
+
+/* Estado activo para Salida */
+.op-active-salida {
+    border-color: #dc3545 !important;
+    background-color: #fff5f5 !important;
+}
+
+/* Ajustes de Tabla */
+.table-hover tbody tr:hover {
+    background-color: #f8f9fc;
+}
+
+/* Ocultar la barra de desplazamiento en la navegación */
+.sidebar nav {
+    scrollbar-width: none; /* Para Firefox */
+    -ms-overflow-style: none;  /* Para Internet Explorer y Edge */
+}
+
+.sidebar nav::-webkit-scrollbar {
+    display: none; /* Para Chrome, Safari y Opera */
+}
+
+/* Opcional: Asegurar que el contenido no se corte */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Estilo para los encabezados de sección del menú lateral */
+.nav-section .nav-label {
+    color: rgba(255, 255, 255, 0.7); /* Blanco con un toque de transparencia para elegancia */
+    font-size: 0.75rem;              /* Tamaño de fuente pequeño y sutil */
+    font-weight: 600;                 /* Un poco de grosor para que destaque */
+    letter-spacing: 0.05em;          /* Espaciado entre letras para legibilidad */
+    padding-left: 1.5rem;            /* Alineación con los iconos de abajo */
+    margin-bottom: 0.5rem;
+    display: block;
+    text-transform: uppercase;        /* Mantiene el estilo en mayúsculas */
+}
+
+/* Efecto opcional: blanco puro al pasar el mouse por la sección */
+.nav-section:hover .nav-label {
+    color: #ffffff;
+    transition: color 0.3s ease;
+}
+
+/* El contenedor principal debe estirarse y mantener el color */
+.main-content {
+    flex: 1;
+    margin-left: 280px; /* Ancho del sidebar */
+    background-color: var(--bg-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* El cuerpo del contenido también debe ser consistente */
+.content-body {
+    flex: 1;
+    padding: 30px;
+    background-color: var(--bg-main);
+}
+
+body.has-sidebar .content-body {
+    background-color: #f4f7f6; /* El gris amigable */
+    padding: 30px;
+}
+
+body.login-page .content-body {
+    background-color: var(--sidebar-dark); /* O el color oscuro que elegiste */
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+/* Cuando SÍ hay sesión (has-sidebar) */
+body.has-sidebar .main-content {
+    margin-left: 260px;
+}
+
+/* --- SIDEBAR REINVENTADO --- */
+.sidebar {
+    width: 280px;
+    background-color: var(--sidebar-dark);
+    height: 100vh;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+.sidebar-header {
+    padding: 40px 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar .nav-link {
+    color: rgba(255,255,255,0.7);
+    margin: 5px 15px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+    background: rgba(255,255,255,0.1);
+    color: var(--white);
+}
+
+.sidebar .nav-link.active {
+    background: var(--primary-gradient);
+    color: var(--white) !important;
+    box-shadow: 0 4px 15px rgba(35, 166, 213, 0.4);
+}
+
+/* --- FOOTER DEL SIDEBAR --- */
+.sidebar-footer {
+    margin-top: auto;
+    padding: 20px 15px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.logout-link {
+    color: #ff7675 !important;
+}
+
+.logo-wrapper {
+    background: white;
+    padding: 8px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: #e74c3c;
+    color: white;
+}
+
+.brand-name {
+    color: white;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* --- CONTENEDOR PRINCIPAL --- */
+.main-content {
+    margin-left: 260px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-bar {
+    background: var(--white);
+    height: 75px; /* Altura fija para mayor orden */
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Permite que ms-auto funcione */
+    padding: 0 40px;
+    border-bottom: 1px solid #edf2f9;
+}
+
+/* --- TARJETAS (CARDS) --- */
+.card {
+    background: var(--white);
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid #f1f1f1;
+    padding: 20px;
+    font-weight: 700;
+}
+
+/* --- TABLAS --- */
+.table thead th {
+    background-color: #f8f9fa;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    border: none;
+    padding: 15px;
+}
+
+.table tbody td {
+    padding: 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+/* --- INPUTS Y BOTONES --- */
+.form-control, .form-select {
+    background-color: #f9fbfd;
+    border: 1px solid #dce4ec;
+    border-radius: 8px;
+    padding: 10px 15px;
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(35, 166, 213, 0.2);
+}
+
+/* --- RESPONSIVE PARA EL LOGIN --- */
+body.login-page .main-content {
+    margin-left: 0;
+    justify-content: center;
+    align-items: center;
+    background: var(--sidebar-dark); /* El login se verá oscuro y elegante */
+}
+
+/* --- SECCIONES Y NAV --- */
+.nav-section {
+    padding: 0 15px 25px 15px;
+}
+
+.nav-label {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding-left: 15px;
+    margin-bottom: 10px;
+    display: block;
+    letter-spacing: 1px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    margin-bottom: 5px;
+}
+
+.nav-item i, .nav-item span.material-icons-round {
+    margin-right: 15px;
+    font-size: 1.3rem;
+}
+
+.nav-item:hover {
+    background: rgba(255,255,255,0.05);
+    color: white;
+}
+
+.nav-item.active {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 4px 15px rgba(35, 166, 213, 0.3);
+}
+
+    .chart-wrapper {
+        position: relative;
+        height: 300px; /* Altura fija para estabilidad */
+        width: 100%;
+    }
+    .kpi-card {
+        transition: transform 0.2s;
+    }
+    .kpi-card:hover {
+        transform: translateY(-5px);
+    }

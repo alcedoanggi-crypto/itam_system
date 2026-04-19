@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Categorías de Inventario</h2>
+            <p class="text-muted small">Clasifica tus equipos tecnológicos</p>
+        </div>
+        <button type="button" class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalCategoria">
+            <span class="material-icons-round">add</span> Nueva Categoría
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th class="text-center">Total Equipos</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cat in categorias %}
+                    <tr>
+                        <td class="ps-4 text-muted">#{{ cat.id }}</td>
+                        <td><span class="fw-bold text-dark">{{ cat.nombre }}</span></td>
+                        <td>{{ cat.descripcion or 'Sin descripción' }}</td>
+                        <td class="text-center">
+                            <span class="badge bg-primary-subtle text-primary rounded-pill">
+                                {{ cat.equipos|length }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-light text-primary"><span class="material-icons-round fs-6">edit</span></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCategoria" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold">Crear Categoría</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nombre de la Categoría</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Ej: Laptops, Servidores..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Descripción (Opcional)</label>
+                        <textarea name="descripcion" class="form-control" rows="3" placeholder="Define qué tipo de equipos pertenecen aquí"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary px-4">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
