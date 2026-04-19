@@ -5,6 +5,11 @@
 Ver imágen del sistema:
 <img width="1365" height="656" alt="image" src="https://github.com/user-attachments/assets/eb0cdc7f-982a-44be-8140-a6d9d188f2c3" />
 
+## 🗄️ Base de Datos
+El proyecto incluye el archivo `tecnologico.sql` con la estructura completa de tablas y relaciones. Para replicarla localmente:
+1. Crea una base de datos en PostgreSQL.
+2. Ejecuta: `psql -U tu_usuario -d itam_db -f itam_db_schema.sql`
+
 ## 🚀 Funcionalidades Estrella
 
 * **Dashboard Inteligente:** Visualización en tiempo real del estado de los equipos (Disponibles, En Reparación, Total).
