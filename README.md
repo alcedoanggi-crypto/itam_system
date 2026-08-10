@@ -1,43 +1,156 @@
-# 🖥️ EquipoPRO: Sistema de equipo tecnologico IT Asset Management System (ITAM)
+# 💻 Sistema de Administración de Equipos Tecnológicos (ITAM)
 
-**EquipoPRO** es una solución integral de nivel empresarial diseñada para el control, seguimiento y mantenimiento de activos tecnológicos. Esta plataforma permite centralizar la gestión de hardware y software, optimizando el ciclo de vida de los equipos y garantizando la continuidad operativa.
+Aplicación web para el control de equipos tecnológicos de una organización:
+inventario de activos, asignación a empleados y mantenimientos.
 
-Ver imágen del sistema:
-<img width="1365" height="656" alt="image" src="https://github.com/user-attachments/assets/eb0cdc7f-982a-44be-8140-a6d9d188f2c3" />
+Este proyecto demuestra desarrollo backend con **Python y Flask**,
+arquitectura **MVC**, y persistencia de datos con **PostgreSQL** — inspirado
+en experiencia real administrando infraestructura y activos de TI.
 
-## 🗄️ Base de Datos
-El proyecto incluye el archivo `tecnologico.sql` con la estructura completa de tablas y relaciones. Para replicarla localmente:
-1. Crea una base de datos en PostgreSQL.
-2. Ejecuta: `psql -U tu_usuario -d itam_db -f itam_db_schema.sql`
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Flask](https://img.shields.io/badge/Flask-2.x-black)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-## 🚀 Funcionalidades Estrella
+---
 
-* **Dashboard Inteligente:** Visualización en tiempo real del estado de los equipos (Disponibles, En Reparación, Total).
-* **Gestión de Inventario IT:** Control detallado por Marcas, Modelos, Software y Ubicaciones.
-* **Módulo de Reparaciones:** Seguimiento de mantenimientos preventivos y correctivos para reducir el "downtime".
-* **Control de Asignaciones:** Registro histórico de movimientos y responsables de cada activo.
-* **Interfaz Responsiva:** Diseño profesional, intuitivo y optimizado para la productividad.
+## 📸 Vista Previa
 
-## 🛠️ Stack Tecnológico
+> Agrega aquí 2-3 capturas de pantalla (panel de control, listado de
+> equipos, formulario de asignación).
+>
+> ```markdown
+> ![Panel de Control](docs/screenshots/dashboard.png)
+> ![Listado de equipos](docs/screenshots/equipos.png)
+> ```
 
-* **Backend:** Python 3.x con **Flask** (Framework robusto y escalable).
-* **Base de Datos:** PostgreSQL (Diseño relacional optimizado para integridad de datos).
-* **Frontend:** HTML5, CSS3 (Custom Styles) y **JavaScript** para gráficas dinámicas.
-* **Gestión de Archivos:** Sistema de carga de imágenes (Uploads) para documentación visual de equipos.
-* **Seguridad:** Implementación de variables de entorno para protección de credenciales sensibles.
+**Demo en vivo:** _(agrega aquí el link si despliegas en Render/Railway)_
+**Video demostrativo:** _(agrega aquí el link a tu video de TikTok)_
 
-## 📁 Estructura Arquitectónica (MVC)
+---
 
-El proyecto sigue una estructura limpia y modular para facilitar su escalabilidad:
+## 🚀 Características Principales
 
-- `app/static`: Recursos estáticos (CSS, JS, Dashboards).
-- `app/templates`: Vistas dinámicas procesadas con Jinja2.
-- `models.py`: Definición del esquema de base de datos relacional.
-- `routes.py`: Controladores y lógica de negocio.
-- `config.py`: Gestión de configuraciones y seguridad del servidor.
+- **Inventario de activos:** laptops, monitores, periféricos y licencias de
+  software, con número de serie, fecha de compra y estado.
+- **Panel de control:** total de equipos, en reparación y disponibles,
+  con gráficos por categoría.
+- **Asignación de equipos:** vinculación de activos a empleados con
+  historial de asignación/devolución.
+- **Mantenimientos:** registro de mantenimientos preventivos y correctivos
+  con fecha y estado.
+- **Categorías de activos:** organización por tipo (hardware, software,
+  periféricos, redes).
 
-## ⚙️ Instalación Local
+## 🛠️ Tecnologías Utilizadas
 
-1. **Clonar el repositorio:**
-   ```bash
-   git clone [https://github.com/alcedoanggi-crypto/itam_system.git](https://github.com/alcedoanggi-crypto/itam_system.git)
+| Categoría        | Tecnología                                   |
+|-------------------|-----------------------------------------------|
+| Backend           | Python 3.11 + Flask                           |
+| Base de datos     | PostgreSQL (gestionada con Flask-SQLAlchemy)  |
+| Frontend          | HTML5 (Jinja2), CSS3, JavaScript              |
+| Visualización     | Chart.js (gráficos del panel de control)      |
+| Seguridad         | Variables de entorno (python-dotenv)          |
+
+## 📁 Estructura del Proyecto
+
+```
+itam_system/
+├── app/
+│   ├── static/        # CSS, JS y recursos estáticos
+│   ├── templates/      # Vistas Jinja2 (equipos, asignaciones, dashboard)
+│   ├── models.py       # Estructura de la base de datos (Equipo, Empleado, Mantenimiento)
+│   └── routes.py       # Lógica de navegación y asignación de activos
+├── config.py            # Configuración segura del servidor
+├── requirements.txt      # Dependencias del proyecto
+├── run.py                # Punto de entrada de la aplicación
+└── .env.example           # Ejemplo de variables de entorno requeridas
+```
+
+---
+
+## 🔧 Instalación y Uso Local
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/alcedoanggi-crypto/itam_system.git
+cd itam_system
+```
+
+### 2. Crear y activar entorno virtual
+
+```bash
+python -m venv venv
+
+# En Linux/Mac
+source venv/bin/activate
+
+# En Windows
+venv\Scripts\activate
+```
+
+### 3. Instalar dependencias
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configurar variables de entorno
+
+Crea un archivo `.env` en la raíz del proyecto basado en `.env.example`:
+
+```env
+FLASK_APP=run.py
+FLASK_ENV=development
+SECRET_KEY=tu_clave_secreta_aqui
+DATABASE_URL=postgresql://usuario:password@localhost:5432/itam_db
+```
+
+### 5. Crear la base de datos y aplicar migraciones
+
+```bash
+flask db upgrade
+```
+
+> Si el proyecto no usa Flask-Migrate todavía, inicializa las tablas con:
+> `python -c "from app import db; db.create_all()"`
+
+### 6. (Opcional) Cargar datos de prueba
+
+```bash
+python seed.py
+```
+
+### 7. Ejecutar la aplicación
+
+```bash
+flask run
+```
+
+La aplicación estará disponible en `http://127.0.0.1:5000`
+
+**Credenciales de prueba** _(si aplica)_:
+- Usuario: `admin@demo.com`
+- Contraseña: `demo1234`
+
+---
+
+## 🧪 Próximas Mejoras
+
+- [ ] Escaneo de código QR por activo
+- [ ] Alertas automáticas de vencimiento de garantía/licencia
+- [ ] Tests automatizados con Pytest
+- [ ] Despliegue con Docker
+
+## 👩‍💻 Autora
+
+**Anggie Alcedo** — Ingeniera de Sistemas | Full Stack Developer & QA
+Automation
+[GitHub](https://github.com/alcedoanggi-crypto) ·
+[LinkedIn](#) · alcedoanggi@gmail.com
+
+## 📄 Licencia
+
+Este proyecto está bajo la licencia MIT. Ver el archivo `LICENSE` para más
+detalles.
