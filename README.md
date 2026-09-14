@@ -16,13 +16,14 @@ en experiencia real administrando infraestructura y activos de TI.
 
 ## 📸 Vista Previa
 
-> Agrega aquí 2-3 capturas de pantalla (panel de control, listado de
-> equipos, formulario de asignación).
->
-> ```markdown
-> ![Panel de Control](docs/screenshots/dashboard.png)
-> ![Listado de equipos](docs/screenshots/equipos.png)
-> ```
+**Inicio de sesión**
+![Inicio de sesión](docs/screenshots/login.png)
+
+**Panel de control**
+![Panel de Control](docs/screenshots/dashboard.png)
+
+**Listado de equipos**
+![Listado de equipos](docs/screenshots/equipos.png)
 
 **Demo en vivo:** _(agrega aquí el link si despliegas en Render/Railway)_
 **Video demostrativo:** _(agrega aquí el link a tu video de TikTok)_
