@@ -1,0 +1,17 @@
+# Entorno virtual
+.venv/
+venv/
+
+# Python compilado
+__pycache__/
+*.pyc
+
+# IDE
+.idea/
+
+# Fotos subidas por los usuarios (contenido, no código)
+app/static/uploads/equipos/*
+!app/static/uploads/equipos/.gitkeep
+
+# Variables de entorno / secretos
+.env

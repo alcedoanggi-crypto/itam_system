@@ -21,7 +21,8 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light">
                         <tr>
-                            <th class="ps-4 text-uppercase small fw-bold text-secondary">S/N (Serie)</th>
+                            <th class="ps-4 text-uppercase small fw-bold text-secondary">Foto</th>
+                            <th class="text-uppercase small fw-bold text-secondary">S/N (Serie)</th>
                             <th class="text-uppercase small fw-bold text-secondary">Tipo</th>
                             <th class="text-uppercase small fw-bold text-secondary">Marca/Modelo</th>
                             <th class="text-uppercase small fw-bold text-secondary">Categoría</th>
@@ -33,7 +34,17 @@
                     <tbody>
                         {% for eq in equipos %}
                         <tr>
-                            <td class="ps-4 fw-bold text-primary">{{ eq.numero_serie }}</td>
+                            <td class="ps-4">
+                                {% if eq.imagen %}
+                                <img src="{{ url_for('static', filename='uploads/equipos/' + eq.imagen) }}"
+                                     alt="Foto de {{ eq.numero_serie }}" class="equipo-thumb">
+                                {% else %}
+                                <div class="equipo-thumb equipo-thumb-placeholder">
+                                    <span class="material-icons-round">devices_other</span>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td class="fw-bold text-primary">{{ eq.numero_serie }}</td>
                             <td>{{ eq.tipo }}</td>
                             <td>
                                 {% if eq.marca_modelo %}
@@ -74,7 +85,7 @@
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="7" class="text-center py-5 text-muted">
+                            <td colspan="8" class="text-center py-5 text-muted">
                                 <span class="material-icons-round fs-1 d-block mb-2 text-light">inventory_2</span>
                                 No hay equipos registrados todavía.
                             </td>
@@ -100,7 +111,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form action="{{ url_for('equipos.listar_equipos') }}" method="POST">
+            <form action="{{ url_for('equipos.listar_equipos') }}" method="POST" enctype="multipart/form-data">
                 <div class="modal-body p-4">
                     <div class="row g-4">
                         <!-- Columna Izquierda: Información Técnica -->
@@ -108,6 +119,19 @@
                             <h6 class="fw-bold text-primary mb-3 d-flex align-items-center">
                                 <span class="material-icons-round fs-5 me-1">settings</span> Datos Técnicos
                             </h6>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Foto del Equipo</label>
+                                <label for="inputImagenEquipo" class="photo-dropzone" id="photoDropzone">
+                                    <img id="photoPreviewImg" class="photo-preview-img d-none" alt="Vista previa">
+                                    <div id="photoDropzoneEmpty" class="text-center text-muted">
+                                        <span class="material-icons-round fs-2 d-block mb-1">add_a_photo</span>
+                                        <span class="small fw-semibold d-block">Arrastra una imagen o haz clic</span>
+                                        <span class="small text-muted">PNG, JPG o WEBP · máx. 5MB</span>
+                                    </div>
+                                </label>
+                                <input type="file" name="imagen" id="inputImagenEquipo" accept="image/png,image/jpeg,image/gif,image/webp" class="d-none">
+                            </div>
 
                             <div class="mb-3">
                                 <label class="form-label fw-bold text-secondary small text-uppercase">Número de Serie</label>
@@ -200,4 +224,48 @@
         </div>
     </div>
 </div>
+
+<script>
+    (function () {
+        const input = document.getElementById('inputImagenEquipo');
+        const dropzone = document.getElementById('photoDropzone');
+        const previewImg = document.getElementById('photoPreviewImg');
+        const emptyState = document.getElementById('photoDropzoneEmpty');
+
+        function mostrarPreview(file) {
+            if (!file) return;
+            const lector = new FileReader();
+            lector.onload = (e) => {
+                previewImg.src = e.target.result;
+                previewImg.classList.remove('d-none');
+                emptyState.classList.add('d-none');
+            };
+            lector.readAsDataURL(file);
+        }
+
+        input.addEventListener('change', () => mostrarPreview(input.files[0]));
+
+        ['dragenter', 'dragover'].forEach(evt => {
+            dropzone.addEventListener(evt, (e) => {
+                e.preventDefault();
+                dropzone.classList.add('is-dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(evt => {
+            dropzone.addEventListener(evt, (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('is-dragover');
+            });
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            const archivo = e.dataTransfer.files[0];
+            if (archivo) {
+                input.files = e.dataTransfer.files;
+                mostrarPreview(archivo);
+            }
+        });
+    })();
+</script>
 {% endblock %}

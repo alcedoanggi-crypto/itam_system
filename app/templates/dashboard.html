@@ -56,8 +56,14 @@
     <div class="row g-4 mb-4">
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-0 pt-4 px-4">
-                    <h6 class="fw-bold m-0 text-dark">Actividad Mensual</h6>
+                <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="fw-bold m-0 text-dark">Equipos Adquiridos por Mes</h6>
+                        <span class="text-muted small">Año {{ ano_actual }}</span>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill small fw-semibold">
+                        {{ values_actividad|sum }} en el año
+                    </span>
                 </div>
                 <div class="card-body">
                     <div class="chart-wrapper">
@@ -74,6 +80,21 @@
                 <div class="card-body">
                     <div class="chart-wrapper">
                         <canvas id="categoriaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h6 class="fw-bold m-0 text-dark">Equipos por Estado</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-wrapper" style="height: 220px;">
+                        <canvas id="estadoChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -118,40 +139,150 @@
     // Configuración global para estabilidad en scroll
     Chart.defaults.maintainAspectRatio = false;
     Chart.defaults.responsive = true;
+    Chart.defaults.font.family = "'Inter', system-ui, -apple-system, sans-serif";
+    Chart.defaults.color = '#898781';
 
-    // Gráfico de Categorías
+    // Paleta categórica validada (orden fijo, no cíclico por rango)
+    const PALETA_CATEGORICA = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#4a3aa7', '#e34948'];
+    // Paleta de estado (semántica fija, nunca reutilizada como serie)
+    const COLOR_ESTADO = {
+        'Disponible': '#0ca30c',
+        'En Reparación': '#d03b3b',
+        'Asignado': '#2a78d6',
+    };
+    const COLOR_ESTADO_DEFECTO = '#898781';
+
+    const tooltipBase = {
+        backgroundColor: '#0b0b0b',
+        titleColor: '#ffffff',
+        bodyColor: '#ffffff',
+        padding: 12,
+        cornerRadius: 8,
+        boxPadding: 6,
+        displayColors: true,
+        titleFont: { weight: '600' }
+    };
+
+    // --- Gráfico de Categorías (identidad -> paleta categórica) ---
+    const labelsCat = {{ labels_cat|tojson if labels_cat else [] }};
+    const valuesCat = {{ values_cat|tojson if values_cat else [] }};
+    const totalCat = valuesCat.reduce((a, b) => a + b, 0);
+
     const ctxCat = document.getElementById('categoriaChart').getContext('2d');
     new Chart(ctxCat, {
         type: 'doughnut',
         data: {
-            labels: {{ labels_cat|tojson if labels_cat else [] }},
+            labels: labelsCat,
             datasets: [{
-                data: {{ values_cat|tojson if values_cat else [] }},
-                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
-                borderWidth: 2,
-                borderColor: '#ffffff'
+                data: valuesCat,
+                backgroundColor: PALETA_CATEGORICA,
+                borderWidth: 3,
+                borderColor: '#ffffff',
+                hoverOffset: 6
             }]
         },
         options: {
-            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true } } },
-            cutout: '70%'
+            cutout: '72%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { usePointStyle: true, pointStyle: 'circle', padding: 16, boxWidth: 8 }
+                },
+                tooltip: {
+                    ...tooltipBase,
+                    callbacks: {
+                        label: (ctx) => {
+                            const pct = totalCat ? Math.round((ctx.raw / totalCat) * 100) : 0;
+                            return ` ${ctx.label}: ${ctx.raw} equipos (${pct}%)`;
+                        }
+                    }
+                }
+            }
         }
     });
 
-    // Gráfico de Actividad
+    // --- Gráfico de Actividad Mensual (magnitud en el tiempo -> un solo hue) ---
     const ctxMov = document.getElementById('movimientosChart').getContext('2d');
+    const gradienteActividad = ctxMov.createLinearGradient(0, 0, 0, 300);
+    gradienteActividad.addColorStop(0, 'rgba(42, 120, 214, 0.28)');
+    gradienteActividad.addColorStop(1, 'rgba(42, 120, 214, 0.02)');
+
     new Chart(ctxMov, {
         type: 'line',
         data: {
-            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+            labels: {{ labels_actividad|tojson }},
             datasets: [{
-                label: 'Equipos Registrados',
-                data: [0, 0, {{ total_equipos }}, 0, 0, 0],
-                borderColor: '#4e73df',
-                backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                label: 'Equipos adquiridos',
+                data: {{ values_actividad|tojson }},
+                borderColor: '#2a78d6',
+                backgroundColor: gradienteActividad,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#2a78d6',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 7,
+                borderWidth: 2.5,
                 fill: true,
-                tension: 0.4
+                tension: 0.35
             }]
+        },
+        options: {
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    ...tooltipBase,
+                    callbacks: {
+                        label: (ctx) => ` ${ctx.parsed.y} equipo(s) adquiridos`
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { color: '#898781' } },
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0, color: '#898781' },
+                    grid: { color: '#e1e0d9' }
+                }
+            }
+        }
+    });
+
+    // --- Gráfico de Estado (semántico -> colores de estado fijos) ---
+    const labelsEstado = {{ labels_estado|tojson if labels_estado else [] }};
+    const valuesEstado = {{ values_estado|tojson if values_estado else [] }};
+    const coloresEstado = labelsEstado.map(e => COLOR_ESTADO[e] || COLOR_ESTADO_DEFECTO);
+
+    const ctxEstado = document.getElementById('estadoChart').getContext('2d');
+    new Chart(ctxEstado, {
+        type: 'bar',
+        data: {
+            labels: labelsEstado,
+            datasets: [{
+                label: 'Equipos',
+                data: valuesEstado,
+                backgroundColor: coloresEstado,
+                borderRadius: 6,
+                maxBarThickness: 46
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    ...tooltipBase,
+                    callbacks: { label: (ctx) => ` ${ctx.parsed.x} equipo(s)` }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { precision: 0, color: '#898781' },
+                    grid: { color: '#e1e0d9' }
+                },
+                y: { grid: { display: false }, ticks: { color: '#52514e', font: { weight: '600' } } }
+            }
         }
     });
 </script>

@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -18,9 +19,14 @@ def create_app():
     app.config['SECRET_KEY'] = 'clave_secreta_muy_segura'
     # IMPORTANTE: Para evitar el UnicodeDecodeError en PostgreSQL/SQLAlchemy,
     # asegúrate de que la URL de la base de datos sea correcta.
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:123456@localhost:5432/tecnologico?client_encoding=utf8'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin123@localhost:5432/tecnologico?client_encoding=utf8'
     app.config['SECRET_KEY'] = 'clave_secreta_muy_segura'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    # Carpeta para las fotos de los equipos
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads', 'equipos')
+    app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB por archivo
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     # 1. Inicializar la base de datos
     db.init_app(app)

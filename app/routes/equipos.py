@@ -1,9 +1,33 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+import os
+import uuid
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_required
+from werkzeug.utils import secure_filename
 from app.models.models import db, Equipo, Categoria, Ubicacion, MarcaModelo
 from datetime import datetime  # Importante para manejar la fecha
 
 equipos_bp = Blueprint('equipos', __name__)
+
+EXTENSIONES_PERMITIDAS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+
+def _extension_permitida(nombre_archivo):
+    return '.' in nombre_archivo and \
+        nombre_archivo.rsplit('.', 1)[1].lower() in EXTENSIONES_PERMITIDAS
+
+
+def _guardar_imagen_equipo(archivo):
+    """Guarda la foto del equipo con un nombre único y devuelve el nombre de archivo."""
+    if not archivo or archivo.filename == '':
+        return None
+    if not _extension_permitida(archivo.filename):
+        flash('Formato de imagen no válido. Usa PNG, JPG, GIF o WEBP.', 'warning')
+        return None
+
+    extension = secure_filename(archivo.filename).rsplit('.', 1)[1].lower()
+    nombre_unico = f"{uuid.uuid4().hex}.{extension}"
+    archivo.save(os.path.join(current_app.config['UPLOAD_FOLDER'], nombre_unico))
+    return nombre_unico
 
 
 @equipos_bp.route('/equipos', methods=['GET', 'POST'])
@@ -30,6 +54,9 @@ def listar_equipos():
             flash('La fecha de compra es obligatoria', 'warning')
             return redirect(url_for('equipos.listar_equipos'))
 
+        # --- FOTO DEL EQUIPO ---
+        nombre_imagen = _guardar_imagen_equipo(request.files.get('imagen'))
+
         nuevo_equipo = Equipo(
             numero_serie=numero_serie,
             tipo=tipo,
@@ -37,7 +64,8 @@ def listar_equipos():
             marca_modelo_id=marca_modelo_id,
             categoria_id=categoria_id,
             ubicacion_id=ubicacion_id,
-            estado=estado
+            estado=estado,
+            imagen=nombre_imagen
         )
 
         try:

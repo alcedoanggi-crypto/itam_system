@@ -3,41 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario - Iniciar Sesión</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>EquipoPRO - Iniciar Sesión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <style>body { font-family: 'Inter', system-ui, sans-serif; }</style>
 </head>
 <body class="login-page">
-    <div class="content-body"> <div class="card login-card p-4 shadow-lg" style="width: 380px;">
-            <div class="text-center mb-4">
-                <span class="material-icons-round login-icon" style="font-size: 48px;">inventory_2</span>
-                <h3 class="fw-bold mt-2">Bienvenido</h3>
-                <p class="text-muted">Sistema Gestion Equipo Tecnologico</p>
+    <canvas id="loginCanvas"></canvas>
+
+    <div class="content-body">
+        <div class="login-shell">
+            <!-- Panel de marca -->
+            <div class="login-brand">
+                <div class="brand-badge">
+                    <span class="material-icons-round">memory</span>
+                </div>
+                <h1>Equipo<span>PRO</span></h1>
+                <p>Plataforma integral para el control y trazabilidad de los activos tecnológicos de tu organización.</p>
+
+                <ul class="brand-features">
+                    <li><span class="material-icons-round">devices</span> Inventario completo de equipos y software</li>
+                    <li><span class="material-icons-round">insights</span> Reportes y métricas en tiempo real</li>
+                    <li><span class="material-icons-round">shield</span> Trazabilidad de asignaciones y mantenimientos</li>
+                </ul>
+
+                <span class="status-pill">
+                    <span class="status-dot"></span> Sistema operativo
+                </span>
             </div>
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                {% for category, message in messages %}
-                  <div class="alert alert-{{ category }} py-2 small">{{ message }}</div>
-                {% endfor %}
-              {% endif %}
-            {% endwith %}
+            <!-- Tarjeta de acceso -->
+            <div class="login-card-wrap">
+                <div class="card login-card border-0">
+                    <div class="text-center mb-4">
+                        <div class="login-icon-wrap">
+                            <span class="material-icons-round">lock</span>
+                        </div>
+                        <h3 class="fw-bold mt-1 mb-0">Bienvenido de nuevo</h3>
+                        <p class="text-muted small mb-0">Ingresa tus credenciales para continuar</p>
+                    </div>
 
-            <form method="POST">
-                <div class="mb-3">
-                    <label class="form-label small fw-bold">Usuario</label>
-                    <input type="text" name="username" class="form-control" placeholder="Ej: admin" required>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        {% for category, message in messages %}
+                          <div class="alert alert-{{ category }} py-2 small">{{ message }}</div>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" autocomplete="off">
+                        <div class="login-field">
+                            <span class="material-icons-round field-icon">person</span>
+                            <input type="text" name="username" placeholder="Usuario" required autofocus>
+                        </div>
+                        <div class="login-field">
+                            <span class="material-icons-round field-icon">key</span>
+                            <input type="password" name="password" id="passwordInput" placeholder="Contraseña" required>
+                            <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
+                                <span class="material-icons-round" id="toggleIcon" style="font-size: 20px;">visibility</span>
+                            </button>
+                        </div>
+                        <button type="submit" class="btn-login">Ingresar al Sistema</button>
+                    </form>
                 </div>
-                <div class="mb-4">
-                    <label class="form-label small fw-bold">Contraseña</label>
-                    <input type="password" name="password" class="form-control" placeholder="••••••••" required>
-                </div>
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">Ingresar al Sistema</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
+
+    <script src="{{ url_for('static', filename='js/login-network.js') }}"></script>
+    <script>
+        const toggleBtn = document.getElementById('togglePassword');
+        const pwdInput = document.getElementById('passwordInput');
+        const toggleIcon = document.getElementById('toggleIcon');
+        toggleBtn.addEventListener('click', () => {
+            const isHidden = pwdInput.type === 'password';
+            pwdInput.type = isHidden ? 'text' : 'password';
+            toggleIcon.textContent = isHidden ? 'visibility_off' : 'visibility';
+        });
+    </script>
 </body>
 </html>

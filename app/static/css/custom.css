@@ -347,3 +347,51 @@ body.login-page .main-content {
     .kpi-card:hover {
         transform: translateY(-5px);
     }
+
+/* --- FOTOS DE EQUIPOS --- */
+.equipo-thumb {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+.equipo-thumb-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2f7;
+    color: #b0bac5;
+}
+
+.photo-dropzone {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 140px;
+    border: 2px dashed #c7d3de;
+    border-radius: 12px;
+    background: #f9fbfd;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.25s ease;
+}
+
+.photo-dropzone:hover {
+    border-color: var(--accent);
+    background: #eef8fc;
+}
+
+.photo-dropzone.is-dragover {
+    border-color: var(--accent);
+    background: #e3f4fa;
+    transform: scale(1.01);
+}
+
+.photo-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
