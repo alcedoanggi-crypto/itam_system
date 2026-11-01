@@ -95,9 +95,12 @@
         </nav>
 
         <div class="sidebar-footer p-3 border-top border-secondary">
-            <a href="{{ url_for('auth_bp.logout') }}" class="nav-item text-danger">
-                <span class="material-icons-round">logout</span> Cerrar Sesión
-            </a>
+            <form action="{{ url_for('auth_bp.logout') }}" method="POST" class="m-0">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="nav-item text-danger w-100 border-0 bg-transparent">
+                    <span class="material-icons-round">logout</span> Cerrar Sesión
+                </button>
+            </form>
         </div>
     </aside>
 

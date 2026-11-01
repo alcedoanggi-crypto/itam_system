@@ -15,3 +15,8 @@ app/static/uploads/equipos/*
 
 # Variables de entorno / secretos
 .env
+.vscode/
+
+# Base de datos local / instancia
+instance/
+*.db

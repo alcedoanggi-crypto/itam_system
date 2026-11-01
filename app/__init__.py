@@ -1,7 +1,9 @@
 import os
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_wtf.csrf import CSRFProtect
+
+from config import Config
 from .models.models import db, User
 from .routes.equipos import equipos_bp
 from .routes.categorias import categorias_bp
@@ -12,24 +14,24 @@ from .routes.asignaciones import asignaciones_bp
 from .routes.mantenimientos import mantenimientos_bp
 from .routes.usuarios import usuarios_bp
 
-def create_app():
-    app = Flask(__name__)
+csrf = CSRFProtect()
 
-    # Configuración
-    app.config['SECRET_KEY'] = 'clave_secreta_muy_segura'
-    # IMPORTANTE: Para evitar el UnicodeDecodeError en PostgreSQL/SQLAlchemy,
-    # asegúrate de que la URL de la base de datos sea correcta.
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:admin123@localhost:5432/tecnologico?client_encoding=utf8'
-    app.config['SECRET_KEY'] = 'clave_secreta_muy_segura'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+
+    if not app.config.get('SQLALCHEMY_DATABASE_URI'):
+        raise RuntimeError(
+            'Falta DATABASE_URL. Copia .env.example como .env y configura tu base de datos.'
+        )
 
     # Carpeta para las fotos de los equipos
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static', 'uploads', 'equipos')
-    app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB por archivo
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     # 1. Inicializar la base de datos
     db.init_app(app)
+    csrf.init_app(app)
 
     # 2. CONFIGURACIÓN DE FLASK-LOGIN (Esto quita el AttributeError)
     login_manager = LoginManager()
@@ -39,7 +41,7 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         # Esta función le dice a Flask-Login cómo encontrar al usuario
-        return User.query.get(int(user_id))
+        return db.session.get(User, int(user_id))
 
     # 3. Registro de Blueprints
     from .routes.auth import auth_bp

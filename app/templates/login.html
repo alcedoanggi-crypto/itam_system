@@ -55,6 +55,7 @@
                     {% endwith %}
 
                     <form method="POST" autocomplete="off">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="login-field">
                             <span class="material-icons-round field-icon">person</span>
                             <input type="text" name="username" placeholder="Usuario" required autofocus>

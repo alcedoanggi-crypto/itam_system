@@ -1,29 +1,31 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from flask_login import login_user, logout_user
-from ..models.models import User, db
+from flask_login import login_user, logout_user, login_required, current_user
+from ..models.models import User
 
 auth_bp = Blueprint('auth_bp', __name__)
 
+
 @auth_bp.route('/', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard.dashboard'))
+
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
 
-        # La consulta ahora será segura gracias al client_encoding en la URI
         user = User.query.filter_by(username=username).first()
 
-        if user and user.password == password:
+        if user and user.check_password(password):
             login_user(user)
-            # Redirige al Blueprint 'dashboard' y su función 'dashboard'
             return redirect(url_for('dashboard.dashboard'))
-        else:
-            flash('Usuario o contraseña incorrectos', 'danger')
+        flash('Usuario o contraseña incorrectos', 'danger')
 
     return render_template('login.html')
 
-@auth_bp.route('/logout')
+
+@auth_bp.route('/logout', methods=['POST'])
+@login_required
 def logout():
     logout_user()
-    return redirect(url_for('auth_bp.login'))
     return redirect(url_for('auth_bp.login'))

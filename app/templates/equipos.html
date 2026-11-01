@@ -112,6 +112,7 @@
             </div>
 
             <form action="{{ url_for('equipos.listar_equipos') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-body p-4">
                     <div class="row g-4">
                         <!-- Columna Izquierda: Información Técnica -->

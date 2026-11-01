@@ -47,25 +47,36 @@ en experiencia real administrando infraestructura y activos de TI.
 
 | Categoría        | Tecnología                                   |
 |-------------------|-----------------------------------------------|
-| Backend           | Python 3.11 + Flask                           |
+| Backend           | Python 3.11 + Flask (Blueprints)              |
 | Base de datos     | PostgreSQL (gestionada con Flask-SQLAlchemy)  |
-| Frontend          | HTML5 (Jinja2), CSS3, JavaScript              |
+| Frontend          | HTML5 (Jinja2), Bootstrap 5, JavaScript       |
 | Visualización     | Chart.js (gráficos del panel de control)      |
-| Seguridad         | Variables de entorno (python-dotenv)          |
+| Seguridad         | Flask-Login, hash de contraseñas, CSRF (Flask-WTF), variables de entorno (python-dotenv) |
+
+## 🔐 Seguridad
+
+- Contraseñas cifradas con hash (Werkzeug); las cuentas antiguas en texto
+  plano se migran automáticamente al iniciar sesión.
+- Protección CSRF en todos los formularios.
+- Credenciales y clave secreta fuera del código (archivo `.env`).
+- Subida de imágenes validada por extensión, con nombre único y límite de 5 MB.
 
 ## 📁 Estructura del Proyecto
 
 ```
 itam_system/
 ├── app/
-│   ├── static/        # CSS, JS y recursos estáticos
-│   ├── templates/      # Vistas Jinja2 (equipos, asignaciones, dashboard)
-│   ├── models.py       # Estructura de la base de datos (Equipo, Empleado, Mantenimiento)
-│   └── routes.py       # Lógica de navegación y asignación de activos
-├── config.py            # Configuración segura del servidor
-├── requirements.txt      # Dependencias del proyecto
-├── run.py                # Punto de entrada de la aplicación
-└── .env.example           # Ejemplo de variables de entorno requeridas
+│   ├── models/models.py   # Modelos: User, Equipo, Categoria, Ubicacion, MarcaModelo, Software, Asignacion, Mantenimiento
+│   ├── routes/            # Un Blueprint por módulo (auth, dashboard, equipos, asignaciones, ...)
+│   ├── static/            # CSS, JS y fotos subidas de equipos
+│   └── templates/         # Vistas Jinja2
+├── docs/screenshots/      # Capturas del README
+├── config.py              # Configuración leída desde variables de entorno
+├── crear_admin.py         # Crea o actualiza el usuario administrador
+├── tecnologico.sql        # Respaldo de PostgreSQL con datos de ejemplo
+├── requirements.txt       # Dependencias del proyecto
+├── run.py                 # Punto de entrada de la aplicación
+└── .env.example           # Plantilla de variables de entorno
 ```
 
 ---
@@ -99,46 +110,41 @@ pip install -r requirements.txt
 
 ### 4. Configurar variables de entorno
 
-Crea un archivo `.env` en la raíz del proyecto basado en `.env.example`:
+Crea la base de datos `tecnologico` en PostgreSQL y copia `.env.example`
+como `.env`:
 
 ```env
-FLASK_APP=run.py
-FLASK_ENV=development
-SECRET_KEY=tu_clave_secreta_aqui
-DATABASE_URL=postgresql://usuario:password@localhost:5432/itam_db
+SECRET_KEY=una_clave_larga_y_aleatoria
+DATABASE_URL=postgresql://usuario:password@localhost:5432/tecnologico?client_encoding=utf8
+FLASK_DEBUG=1
 ```
 
-### 5. Crear la base de datos y aplicar migraciones
+### 5. Crear las tablas y el usuario administrador
 
 ```bash
-flask db upgrade
+python crear_admin.py
 ```
 
-> Si el proyecto no usa Flask-Migrate todavía, inicializa las tablas con:
-> `python -c "from app import db; db.create_all()"`
+> Opcional: para cargar los datos de ejemplo, restaura el respaldo con
+> `pg_restore -d tecnologico tecnologico.sql`
 
-### 6. (Opcional) Cargar datos de prueba
-
-```bash
-python seed.py
-```
-
-### 7. Ejecutar la aplicación
+### 6. Ejecutar la aplicación
 
 ```bash
-flask run
+python run.py
 ```
 
 La aplicación estará disponible en `http://127.0.0.1:5000`
 
-**Credenciales de prueba** _(si aplica)_:
-- Usuario: `admin@demo.com`
-- Contraseña: `demo1234`
+**Credenciales de prueba** (creadas por `crear_admin.py`):
+- Usuario: `admin`
+- Contraseña: `admin123`
 
 ---
 
 ## 🧪 Próximas Mejoras
 
+- [ ] Editar / eliminar equipos y registrar devoluciones desde la tabla
 - [ ] Escaneo de código QR por activo
 - [ ] Alertas automáticas de vencimiento de garantía/licencia
 - [ ] Tests automatizados con Pytest

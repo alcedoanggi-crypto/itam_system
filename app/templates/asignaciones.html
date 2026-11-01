@@ -59,6 +59,7 @@
                             <td class="text-end pe-4">
                                 {% if not asig.fecha_devolucion %}
                                 <form action="{{ url_for('asignaciones.listar_asignaciones') }}" method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                     <!-- Aquí podrías pasar un ID oculto para marcar como devuelto -->
                                     <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3">
                                         Registrar Devolución
@@ -94,6 +95,7 @@
             </div>
 
             <form method="POST" action="{{ url_for('asignaciones.listar_asignaciones') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="modal-body p-4">
                     <!-- Selección de Equipo -->
                     <div class="mb-4">

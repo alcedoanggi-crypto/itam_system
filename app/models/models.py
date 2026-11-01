@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
@@ -13,6 +14,24 @@ class User(UserMixin, db.Model):
     nombre = db.Column(db.String(100))
     email = db.Column(db.String(100), unique=True)
     asignaciones = db.relationship('Asignacion', backref='usuario', lazy=True)
+
+    # --- Contraseñas: nunca se guardan en texto plano ---
+    def set_password(self, raw_password):
+        # pbkdf2 genera un hash de ~100 caracteres (cabe en la columna de 128)
+        self.password = generate_password_hash(raw_password, method='pbkdf2:sha256')
+
+    def check_password(self, raw_password):
+        if not self.password or not raw_password:
+            return False
+        if self.password.startswith(('pbkdf2:', 'scrypt:')):
+            return check_password_hash(self.password, raw_password)
+        # Compatibilidad: cuentas antiguas guardadas en texto plano.
+        # Si coincide, se migra a hash en ese mismo momento.
+        if self.password == raw_password:
+            self.set_password(raw_password)
+            db.session.commit()
+            return True
+        return False
 
 # 2. CATEGORÍAS
 class Categoria(db.Model):

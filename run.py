@@ -1,10 +1,9 @@
-from app import create_app
-import sys
 import os
 
-# Iniciamos la aplicación
+from app import create_app
+
 app = create_app()
 
-if __name__ == '__main__':
-    # El modo debug=True es fundamental para que el servidor no se cierre
-    app.run(debug=True)
+if __name__ == "__main__":
+    # El modo debug se activa solo con FLASK_DEBUG=1 en el archivo .env
+    app.run(debug=os.environ.get("FLASK_DEBUG") == "1")

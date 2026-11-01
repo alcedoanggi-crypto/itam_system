@@ -18,13 +18,12 @@ with app.app_context():
 
     u = User.query.filter_by(username=usuario).first()
     if u:
-        u.password = clave
         accion = "actualizado"
     else:
-        u = User(username=usuario, password=clave,
-                 nombre="Administrador", email=f"{usuario}@itam.local")
+        u = User(username=usuario, nombre="Administrador", email=f"{usuario}@itam.local")
         db.session.add(u)
         accion = "creado"
+    u.set_password(clave)  # se guarda cifrada (hash), nunca en texto plano
 
     db.session.commit()
     print(f"Usuario '{usuario}' {accion}. Contrasena: {clave}")
